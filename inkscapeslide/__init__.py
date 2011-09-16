@@ -33,7 +33,9 @@ def main():
     usage = "Usage: %prog [options] svgfilename"
     parser = OptionParser(usage=usage)
     parser.add_option("-i", "--imageexport", action="store_true", dest="imageexport", default=False, help="Use PNG files as export content")
-    parser.add_option("-k", "--keep", action="store_true", dest="keeppdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
+    parser.add_option("-k", "--keep", action="store_true", dest="keep_pdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
+    parser.add_option("-o", "--inkscape-options", action="store",
+        dest="inkscape_opts", default="", help="with this option you can specify extra options that will be used for the extraction of the SVG file from inkscape")
     (options, args) = parser.parse_args()
 
     FILENAME = args[0]
@@ -156,7 +158,7 @@ def main():
         f.close()
 
         # Determine whether to export pdf's or images (e.g. inkscape -A versus inkscape -e)
-        cmd = "inkscape -D -A %s %s" % (pdfslide, svgslide)
+        cmd = "inkscape %s -A %s %s" % (options.inkscape_opts, pdfslide, svgslide)
         if options.imageexport:
             cmd = "inkscape -D -d 180 -e %s %s" % (pdfslide, svgslide)
 
@@ -235,7 +237,7 @@ def main():
                 "package, to join PDFs."
 
     # Clean up
-    if (joinedpdf and (False == options.keeppdf)):
+    if (joinedpdf and (False == options.keep_pdf)):
         for pdfslide in pdfslides:
             os.unlink(pdfslide)
 
