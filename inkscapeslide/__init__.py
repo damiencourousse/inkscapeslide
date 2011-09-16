@@ -52,6 +52,7 @@ layer name. The opacity must be between 0 and 1. Example:
     parser.add_option("-i", "--imageexport",
             action="store_true", dest="imageexport", default=False,
             help="Use PNG files as export content")
+    parser.add_option("-k", "--keep", action="store_true", dest="keeppdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
     (options, args) = parser.parse_args()
     try:
         FILENAME = args[0]
@@ -173,11 +174,11 @@ layer name. The opacity must be between 0 and 1. Example:
         f.write(lxml.etree.tostring(doc))
         f.close()
 
-        # Determine whether to export pdf's or images (e.g. inkscape -A versus
+        # Determine whether to export pdf's or images (e.g. inkscape -A versus 
         # inkscape -e)
-        cmd = "inkscape -A %s %s" % (pdfslide, svgslide)
+        cmd = "inkscape -D -A %s %s" % (pdfslide, svgslide)
         if options.imageexport:
-            cmd = "inkscape -d 180 -e %s %s" % (pdfslide, svgslide)
+            cmd = "inkscape -D -d 180 -e %s %s" % (pdfslide, svgslide)
 
         # Using subprocess to hide stdout
         subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()
@@ -258,3 +259,6 @@ layer name. The opacity must be between 0 and 1. Example:
     if joinedpdf:
         for pdfslide in pdfslides:
             os.unlink(pdfslide)
+
+if __name__ == '__main__':
+  main()
