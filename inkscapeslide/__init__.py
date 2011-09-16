@@ -33,10 +33,10 @@ def main():
     usage = "Usage: %prog [options] svgfilename"
     parser = OptionParser(usage=usage)
     parser.add_option("-i", "--imageexport", action="store_true", dest="imageexport", default=False, help="Use PNG files as export content")
+    parser.add_option("-k", "--keep", action="store_true", dest="keeppdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
     (options, args) = parser.parse_args()
 
     FILENAME = args[0]
-
 
     # Take the Wireframes.svg
     f = open(FILENAME)
@@ -144,7 +144,7 @@ def main():
         svgslide = os.path.abspath(os.path.join(os.curdir,
                                                 "%s.p%d.svg" % (FILENAME, i)))
         pdfslide = os.path.abspath(os.path.join(os.curdir,
-                                                "%s.p%d.pdf" % (FILENAME, i)))
+          "%s-%d.pdf" % (FILENAME.split(".svg")[0], i)))
         # Use the correct extension if using images
         if options.imageexport:
             pdfslide = os.path.abspath(os.path.join(os.curdir,
@@ -235,6 +235,10 @@ def main():
                 "package, to join PDFs."
 
     # Clean up
-    if joinedpdf:
+    if (joinedpdf and (False == options.keeppdf)):
         for pdfslide in pdfslides:
             os.unlink(pdfslide)
+
+
+if __name__ == '__main__':
+  main()
