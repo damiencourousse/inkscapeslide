@@ -1,0 +1,4 @@
+$ cd inkscapeslide
+$ python setup.py build
+$ su
+# python setup.py install
