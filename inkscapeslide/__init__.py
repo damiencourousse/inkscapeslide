@@ -51,6 +51,7 @@ layer name. The opacity must be between 0 and 1. Example:
     parser = OptionParser(usage=usage)
     parser.add_option("-i", "--imageexport", action="store_true", dest="imageexport", default=False, help="Use PNG files as export content")
     parser.add_option("-k", "--keep", action="store_true", dest="keep_pdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
+    parser.add_option("-f", "--output", action="store", dest="outputname", default="", help="Output file name")
     parser.add_option("-o", "--inkscape-options", action="store",
         dest="inkscape_opts", default="", help="with this option you can specify extra options that will be used for the extraction of the SVG file from inkscape")
     (options, args) = parser.parse_args()
@@ -143,6 +144,12 @@ layer name. The opacity must be between 0 and 1. Example:
             el.attrib['style'] = '%s:%s;%s' % \
                     (style, value, el.attrib['style'])
 
+    if options.outputname != "":
+        outputFilename = options.outputname
+    else:
+        outputFilename = "%s.pdf" % FILENAME.split(".svg")[0]
+        outputDir = os.path.dirname(outputFilename)
+    print "Output file is: %s" % outputFilename
 
     pdfslides = []
     for i, slide_layers in enumerate(slides):
@@ -255,7 +262,7 @@ layer name. The opacity must be between 0 and 1. Example:
                     "python package, to join PDFs."
 
     # Clean up
-    if (joinedpdf and (False == options.keeppdf)):
+    if (joinedpdf and (False == options.keep_pdf)):
         for pdfslide in pdfslides:
             os.unlink(pdfslide)
 
