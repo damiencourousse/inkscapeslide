@@ -34,6 +34,7 @@ def main():
     parser = OptionParser(usage=usage)
     parser.add_option("-i", "--imageexport", action="store_true", dest="imageexport", default=False, help="Use PNG files as export content")
     parser.add_option("-k", "--keep", action="store_true", dest="keep_pdf", default=False, help="keep temporary pdf files (you can use these files in LaTeX/beamer with multiinclude")
+    parser.add_option("-f", "--output", action="store", dest="outputname", default="", help="Output file name")
     parser.add_option("-o", "--inkscape-options", action="store",
         dest="inkscape_opts", default="", help="with this option you can specify extra options that will be used for the extraction of the SVG file from inkscape")
     (options, args) = parser.parse_args()
@@ -126,6 +127,12 @@ def main():
         else:
             el.attrib['style'] = '%s:%s;%s' % (style, value, el.attrib['style'])
 
+    if options.outputname != "":
+        outputFilename = options.outputname
+    else:
+        outputFilename = "%s.pdf" % FILENAME.split(".svg")[0]
+        outputDir = os.path.dirname(outputFilename)
+    print "Output file is: %s" % outputFilename
 
     pdfslides = []
     for i, slide_layers in enumerate(slides):
@@ -146,7 +153,7 @@ def main():
         svgslide = os.path.abspath(os.path.join(os.curdir,
                                                 "%s.p%d.svg" % (FILENAME, i)))
         pdfslide = os.path.abspath(os.path.join(os.curdir,
-          "%s-%d.pdf" % (FILENAME.split(".svg")[0], i)))
+          "%s-%d.pdf" % (outputFilename.split(".pdf")[0], i)))
         # Use the correct extension if using images
         if options.imageexport:
             pdfslide = os.path.abspath(os.path.join(os.curdir,
@@ -170,9 +177,8 @@ def main():
         print "Generated page %d." % (i+1)
 
     joinedpdf = False
-    outputFilename = "%s.pdf" % FILENAME.split(".svg")[0]
-    outputDir = os.path.dirname(outputFilename)
-    print "Output file %s" % outputFilename
+   
+    print "keep pdfs: ", options.keep_pdf
 
     if options.imageexport:
         # Use ImageMagick to combine the PNG files into a PDF
